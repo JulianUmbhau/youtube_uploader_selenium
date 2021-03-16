@@ -22,51 +22,70 @@ password = data.overlord_prime_account["password"]
 functions.youtube_login(driver, username, password)
 
 # %%
+# columns = ["Titel","Playlist", "Status", "Game", "Path"]
+# df = pd.DataFrame(columns=columns)
 
-df = pd.DataFrame(
-    data=[["Overlord_Prime stream [02-01-2021] WoT","WoT replays", "Ikke uploadet"]],
-    columns=["Titel","Playlist", "Status"])
+# import os
+# files_path = "D:\Twitch VODs\Overlord_Prime"
+# for i in os.listdir(files_path):
+#     if (i.find("mp4") != -1):
+#         df = df.append(pd.Series(data={"Titel":i, "Playlist":"test", "Status":"not uploaded", "Game":"World of Tanks", "Path":os.path.join(files_path, i)}, name="x"))
+
+# df.to_csv("D:\Twitch VODs\Overlord_Prime\overview.csv")
+
+
+
+
 
 
 # TODO read csv with video file information for upload
 
+df = pd.read_csv("D:\Twitch VODs\Overlord_Prime\overview.csv")
 
 # %%
 # TODO find way for repeating upload
-videofile = "D:\\Twitch VODs\\Overlord_Prime\\20210102_859010063_World of Tanks.mp4"
-functions.youtube_upload(driver, videofile)
 
-title = "Overlord_Prime Stream [02-01-2021] WoT"
-functions.set_title(driver, title)
+for idx in range(0,len(df)):
+    videofile = df["Path"].iloc[idx]
+    functions.youtube_upload(driver, videofile)
 
-description = data.overlord_prime_account["description"]
-functions.set_description(driver, description)
+    title = "Overlord_Prime Stream [02-01-2021] WoT"
+    date=df["Titel"].iloc[idx].split("_")[0]
+    title=" ".join(["Overlord_Prime Stream", date, df["Game"].iloc[idx]]) 
+    functions.set_title(driver, title)
 
-functions.open_more_options(driver)
+    description = data.overlord_prime_account["description"]
+    functions.set_description(driver, description)
 
-game = "World of Tanks"
-functions.set_category_and_game(driver, game)
+    functions.open_more_options(driver)
 
-functions.made_for_kids(driver, entry=False)
+    ### TODO SKAL ORDNES! HERFRA OG NED
+    game = df["Game"].iloc[idx]
+    functions.set_category_and_game(driver, game)
 
-functions.set_playlist_WoT(driver)
+    functions.made_for_kids(driver, entry=False)
 
-sleep(0.5)
-elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
-elem.click()
-sleep(0.5)
-elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
-elem.click()
-sleep(0.5)
-elem = driver.find_element_by_xpath('//*[@name="PUBLIC"]//*[@id="radioLabel"]')
-elem.click()
-sleep(0.5)
-elem = driver.find_element_by_xpath('//*[@id="done-button"]/div')
-elem.click()
-sleep(0.5)
-elem = driver.find_element_by_xpath('//*[@id="close-button"]/div')
-elem.click()
+    functions.set_playlist_WoT(driver)
 
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
+    elem.click()
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
+    elem.click()
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@name="PUBLIC"]//*[@id="radioLabel"]')
+    elem.click()
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="done-button"]/div')
+    elem.click()
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="close-button"]/div')
+    elem.click()
+
+    driver.get("https://www.youtube.com/upload")
+
+#%%
 
 # TODO function - insert description and options
 
@@ -78,18 +97,7 @@ elem.click()
 # function download video from twitch - twitchleecher? - TODO later
 
 
-# TODO create spreadsheet with videofiles
-data = {"filename": [],
-        "status": []}
-df = pd.DataFrame(data)
-
-
-def list_files_folder(path):
-    files = []
-    for (dirpath, dirnames, filenames) in walk(path):
-        files.extend(filenames)
-        break
-    return files
+# TODO update spreadsheet with videofiles
 
 
 def insert_files_into_spreadsheet(files, df):

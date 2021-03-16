@@ -1,5 +1,9 @@
 from selenium.webdriver.common.keys import Keys
 from time import sleep
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 
 
 def youtube_login(driver, username, password):
@@ -12,14 +16,16 @@ def youtube_login(driver, username, password):
     elem.send_keys(Keys.ENTER)
     sleep(1)
     try:
-        elem = driver.find_element_by_xpath('//*[@id="view_container"]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]')
+        elem = WebDriverWait(driver, 2).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]'))
+            )
         elem.click()
         code = input("Please enter code")
         sleep(1)
         elem = driver.find_element_by_xpath('//*[@id="idvPin"]')
         elem.send_keys(code)
         elem.send_keys(Keys.ENTER)
-    except:
+    except TimeoutException:
         pass
     driver.get("https://www.youtube.com/upload")
 
@@ -31,14 +37,14 @@ def youtube_upload(driver, videofile):
 
 
 def set_title(driver, title):
-    elem = driver.find_element_by_xpath('//*[@id="basics"]/ytcp-mention-textbox[1]//*[@id="textbox"]')
+    elem = driver.find_element_by_xpath('//*[@id="textbox" and @class="style-scope ytcp-mention-textbox"]')
     elem.clear()
     sleep(0.1)
     elem.send_keys(title)
 
 
 def set_description(driver, description):
-    elem = driver.find_element_by_xpath('//*[@id="basics"]/ytcp-mention-textbox[2]//*[@id="textbox"]')
+    elem = driver.find_element_by_xpath('//*[@id="description-container"]//*[@id="textbox" and @class="style-scope ytcp-mention-textbox"]')
     elem.clear()
     sleep(0.1)
     elem.send_keys(description)
@@ -69,11 +75,11 @@ def set_category_and_game(driver, game):
     elem.click()
     elem = driver.find_element_by_xpath('//*[@id="advanced"]/ytcp-form-gaming/ytcp-form-autocomplete/ytcp-dropdown-trigger/div/div[2]/input')
     elem.clear()
-    elem.send_keys("World of Tanks")
+    elem.send_keys(str(game))
     elem = driver.find_element_by_xpath('//*[@id="text-item-2"]/ytcp-ve/div/div/yt-formatted-string/span[1]')
     elem.click()
 
 
 def open_more_options(driver):
-    elem = driver.find_element_by_xpath('//*[@id="details"]/div/div/ytcp-button/div')
+    elem = driver.find_element_by_xpath('//*[@id="toggle-button"]/div')
     elem.click()
