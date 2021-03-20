@@ -1,3 +1,4 @@
+from os import error
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 from selenium.common.exceptions import TimeoutException
@@ -14,30 +15,34 @@ def youtube_login(driver, username, password):
     elem = driver.find_element_by_xpath('//*[@id="password"]/div[1]/div/div[1]/input')
     elem.send_keys(password)
     elem.send_keys(Keys.ENTER)
-    sleep(1)
-    try:
-        elem = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]'))
-            )
-        elem.click()
-        code = input("Please enter code")
-        sleep(1)
-        elem = driver.find_element_by_xpath('//*[@id="idvPin"]')
-        elem.send_keys(code)
-        elem.send_keys(Keys.ENTER)
-    except TimeoutException:
-        pass
+    # try:
+    #     elem = WebDriverWait(driver, 1).until(
+    #         EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]'))
+    #         )
+    #     elem.click()
+    #     code = input("Please enter code")
+    #     sleep(1)
+    #     elem = driver.find_element_by_xpath('//*[@id="idvPin"]')
+    #     elem.send_keys(code)
+    #     elem.send_keys(Keys.ENTER)
+    # except TimeoutException:
+    #     pass
+    sleep(2)
     driver.get("https://www.youtube.com/upload")
 
 
 def youtube_upload(driver, videofile):
     driver.get("https://www.youtube.com/upload")
-    elem = driver.find_element_by_xpath("//input[@type='file']")
+    elem = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@type='file']"))
+    )
     elem.send_keys(videofile)  # Window$
 
 
 def set_title(driver, title):
-    elem = driver.find_element_by_xpath('//*[@id="textbox" and @class="style-scope ytcp-mention-textbox"]')
+    elem = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="textbox" and @class="style-scope ytcp-mention-textbox"]'))
+        )
     elem.clear()
     sleep(0.1)
     elem.send_keys(title)
@@ -69,17 +74,50 @@ def set_playlist_WoT(driver):
 
 
 def set_category_and_game(driver, game):
-    elem = driver.find_element_by_xpath('//*[@id="category"]//*[@id="trigger"]/ytcp-dropdown-trigger/div/div[2]/span')
+    elem = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@id="category"]//*[@id="trigger"]/ytcp-dropdown-trigger/div/div[2]/span'))
+        )
     elem.click()
-    elem = driver.find_element_by_xpath('//*[@test-id="CREATOR_VIDEO_CATEGORY_GADGETS"]/ytcp-ve/div/div/yt-formatted-string')
+    elem = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@test-id="CREATOR_VIDEO_CATEGORY_GADGETS"]/ytcp-ve/div/div/yt-formatted-string'))
+        )
     elem.click()
-    elem = driver.find_element_by_xpath('//*[@id="advanced"]/ytcp-form-gaming/ytcp-form-autocomplete/ytcp-dropdown-trigger/div/div[2]/input')
+    elem = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@id="category-container"]//*[@class="style-scope ytcp-form-autocomplete"]//*[@type="text"]'))
+        )
     elem.clear()
     elem.send_keys(str(game))
-    elem = driver.find_element_by_xpath('//*[@id="text-item-2"]/ytcp-ve/div/div/yt-formatted-string/span[1]')
+    elem = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@id="text-item-2"]/ytcp-ve/div/div/yt-formatted-string/span[1]'))
+        )
     elem.click()
 
 
 def open_more_options(driver):
     elem = driver.find_element_by_xpath('//*[@id="toggle-button"]/div')
     elem.click()
+
+
+def upload_buttons(driver):
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
+    elem.click()
+    sleep(0.5)
+    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
+    elem.click()
+    sleep(0.5)
+    elem = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@name="PUBLIC"]//*[@id="radioLabel"]'))
+        )
+    elem.click()
+    sleep(0.5)
+    elem = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="done-button"]/div'))
+        )
+    elem.click()
+    elem = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="close-button"]/div'))
+        )
+    elem.click()
+    
+

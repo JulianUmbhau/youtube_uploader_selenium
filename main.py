@@ -40,16 +40,16 @@ functions.youtube_login(driver, username, password)
 
 # TODO read csv with video file information for upload
 
-df = pd.read_csv("D:\Twitch VODs\Overlord_Prime\overview.csv")
-
+df = pd.read_csv("D:\Twitch VODs\Overlord_Prime\overview.csv", index_col=0)
+idx = 0
 # %%
 # TODO find way for repeating upload
 
 for idx in range(0,len(df)):
+    
     videofile = df["Path"].iloc[idx]
     functions.youtube_upload(driver, videofile)
 
-    title = "Overlord_Prime Stream [02-01-2021] WoT"
     date=df["Titel"].iloc[idx].split("_")[0]
     title=" ".join(["Overlord_Prime Stream", date, df["Game"].iloc[idx]]) 
     functions.set_title(driver, title)
@@ -65,25 +65,11 @@ for idx in range(0,len(df)):
 
     functions.made_for_kids(driver, entry=False)
 
-    functions.set_playlist_WoT(driver)
+#    functions.set_playlist_WoT(driver)
 
-    sleep(0.5)
-    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
-    elem.click()
-    sleep(0.5)
-    elem = driver.find_element_by_xpath('//*[@id="next-button"]/div')
-    elem.click()
-    sleep(0.5)
-    elem = driver.find_element_by_xpath('//*[@name="PUBLIC"]//*[@id="radioLabel"]')
-    elem.click()
-    sleep(0.5)
-    elem = driver.find_element_by_xpath('//*[@id="done-button"]/div')
-    elem.click()
-    sleep(0.5)
-    elem = driver.find_element_by_xpath('//*[@id="close-button"]/div')
-    elem.click()
+    functions.upload_buttons(driver)
 
-    driver.get("https://www.youtube.com/upload")
+
 
 #%%
 
@@ -100,30 +86,7 @@ for idx in range(0,len(df)):
 # TODO update spreadsheet with videofiles
 
 
-def insert_files_into_spreadsheet(files, df):
-    for filename in files:
-        if filename not in df.values:
-            print("new entry:", filename)
-            temp = pd.DataFrame([[filename, "not_uploaded"]], columns=["filename","status"])
-            df = df.append(temp, ignore_index=True)
-        else:
-            print("entry exists:", filename)
-    return df
-
-data = {"filename": [],
-        "status": []}
-df = pd.DataFrame(data)
-
-mypath = "D:\\Twitch VODs"
-
-df = pd.read_csv(mypath + "\\uploaded\\upload_list.csv")
-
-path = mypath+data.overlord_prime_account["path"]
-files = list_files_folder(path)
-
-df = insert_files_into_spreadsheet(files, df)
-
-df.to_csv(mypath + "\\uploaded\\upload_list.csv", index=False)
+#df.to_csv(mypath + "\\uploaded\\upload_list.csv", index=False)
 
 # TODO 1. find videofiles in folder for channel wanted
 # TODO 2. update spreadsheet for channel videofiles
